@@ -52,3 +52,7 @@ Route::delete(
     '/comment/{id}',
     [ForumController::class, 'destroyComment']
 )->name('comment.destroy');
+Route::middleware(['auth'])->group(function (){
+    //Route yang bisa di askes apabila sudah login
+    Route::resource('articles' , ArticleController::class);
+});
