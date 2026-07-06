@@ -1,6 +1,4 @@
-@extends('adminlte::page')
-
-@section('title', 'Portal Artikel')
+@extends('layouts.layouts')
 
 @section('content')
 <div class="container-fluid pt-4">
@@ -8,10 +6,10 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <form action="{{ route('articles.index') }}" method="GET">
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg shadow-sm">
                     <input type="text" name="query" class="form-control" placeholder="Cari artikel edukasi di sini..." value="{{ $keyword ?? '' }}">
                     <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Cari</button>
+                        <button type="submit" class="btn btn-primary">🔍 Cari</button>
                     </div>
                 </div>
             </form>
@@ -19,19 +17,21 @@
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success shadow-sm">{{ session('success') }}</div>
     @endif
     @if(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
+        <div class="alert alert-danger shadow-sm">{{ session('error') }}</div>
     @endif
 
     <div class="row">
         <div class="col-md-8">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-header d-flex align-items-center justify-content-between">
-                    <h3 class="card-title font-weight-bold">Artikel Terbaru</h3>
-                    @if(auth()->user()->role === 'guru' || auth()->user()->role === 'admin')
-                        <a href="{{ route('articles.create') }}" class="btn btn-sm btn-success ml-auto"><i class="fas fa-plus"></i> Tulis Artikel Baru</a>
+                    <h3 class="card-title font-weight-bold mb-0">Artikel Terbaru</h3>
+                    @if(strtolower(auth()->user()->role) === 'guru' || strtolower(auth()->user()->role) === 'admin')
+                        <a href="{{ route('articles.create') }}" class="btn btn-sm btn-success ml-auto">
+                            ➕ Tulis Artikel Baru
+                        </a>
                     @endif
                 </div>
                 <div class="card-body">
@@ -50,22 +50,22 @@
         </div>
 
         <div class="col-md-4">
-            <div class="card card-outline card-danger">
-                <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-fire mr-1 text-danger"></i> Artikel Trending</h3>
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title mb-0">🔥 Artikel Trending</h3>
                 </div>
                 <div class="card-body p-0">
-                    <ul class="products-list product-list-in-card pl-2 pr-2">
+                    <ul class="list-group list-group-flush">
                         @forelse($trendingArticles as $trend)
-                            <li class="item py-2 border-bottom">
-                                <div class="product-info ml-2">
-                                    <a href="{{ route('articles.show', $trend->id) }}" class="product-title font-weight-bold text-dark">{{ $trend->title }}</a>
-                                    <span class="badge badge-warning float-right">{{ $trend->views ?? 0 }} Views</span>
-                                    <span class="product-description small text-muted">Oleh: {{ $trend->author }}</span>
+                            <li class="list-group-item py-3">
+                                <a href="{{ route('articles.show', $trend->id) }}" class="font-weight-bold text-dark d-block mb-1">{{ $trend->title }}</a>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="small text-muted">Oleh: {{ $trend->author }}</span>
+                                    <span class="badge badge-warning">{{ $trend->views ?? 0 }} Views</span>
                                 </div>
                             </li>
                         @empty
-                            <li class="item p-3 text-center text-muted">Belum ada materi populer.</li>
+                            <li class="list-group-item p-3 text-center text-muted">Belum ada materi populer.</li>
                         @endforelse
                     </ul>
                 </div>

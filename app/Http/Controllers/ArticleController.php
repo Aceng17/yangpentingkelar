@@ -28,43 +28,44 @@ class ArticleController extends Controller
     }
 
     public function create()
-{
-    $role = strtolower(auth()->user()->role);
+    {
+        $role = strtolower(auth()->user()->role);
 
-    if ($role !== 'admin' && $role !== 'guru') {
-        return redirect()->route('articles.index')->with('error', 'Anda tidak memiliki akses untuk membuat artikel.');
+        if ($role !== 'admin' && $role !== 'guru') {
+            return redirect()->route('articles.index')->with('error', 'Anda tidak memiliki akses untuk membuat artikel.');
+        }
+
+        return view('articles.create');
     }
 
-    return view('articles.create');
-}
+    public function store(Request $request)
+    {
+        $role = strtolower(auth()->user()->role);
 
-public function store(Request $request)
-{
-    $role = strtolower(auth()->user()->role);
+        if ($role !== 'admin' && $role !== 'guru') {
+            return redirect()->route('articles.index')->with('error', 'Anda tidak memiliki akses untuk membuat artikel.');
+        }
 
-    if ($role !== 'admin' && $role !== 'guru') {
-        return redirect()->route('articles.index')->with('error', 'Anda tidak memiliki akses untuk membuat artikel.');
+        Article::create([
+            'title' => $request->title,
+            'author' => $request->author,
+            'category' => $request->category,
+            'content' => $request->content,
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('articles.index')->with('success', 'Artikel berhasil diajukan! Menunggu persetujuan Admin.');
     }
 
-    Article::create([
-        'title' => $request->title,
-        'author' => $request->author,
-        'category' => $request->category,
-        'content' => $request->content,
-        'status' => 'pending',
-    ]);
-
-    return redirect()->route('articles.index')->with('success', 'Artikel berhasil diajukan! Menunggu persetujuan Admin.');
-}
     public function show($id)
     {
         $article = Article::findOrFail($id);
         
-        if ($article->status !== 'approved' && auth()->user()->role !== 'admin') {
+        if ($article->status !== 'approved' && strtolower(auth()->user()->role) !== 'admin') {
             abort(403);
         }
 
-        if (auth()->user()->role === 'siswa') {
+        if (strtolower(auth()->user()->role) === 'siswa') {
             $article->increment('views');
         }
 
